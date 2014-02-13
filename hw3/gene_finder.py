@@ -32,13 +32,13 @@ def coding_strand_to_AA(dna):
     x= ''
     l=0
     while i<(len(dna)-2):
-        substr = dna[i:i+3]
+        substr = dna[i:i+3]    #searches for codons
         for j in range(0,len(codons)):
             for l in range(0, len(codons[j])):
-                if codons [j][l] == substr:
+                if codons [j][l] == substr:    #matches codon with item in codons
                     x = x+ aa[j]  
         i = i +3
-    return x
+    return x   #returns string with Amino Acids
 
 
 def coding_strand_to_AA_unit_tests():
@@ -57,9 +57,9 @@ def get_reverse_complement(dna):
     
     i=0
     x = ''
-    for i in range(0,len(dna)):
+    for i in range(0,len(dna)):   #cycles through every element of dna
         substr2 = dna[i:i+1]
-        if substr2 == 'A' or substr2 == 'a':
+        if substr2 == 'A' or substr2 == 'a':   #changes each element to its complement
             x=x+"T"
         elif substr2 == 'T' or substr2 == 't':
             x = x+ "A"
@@ -67,7 +67,7 @@ def get_reverse_complement(dna):
             x = x+ "G"
         elif substr2 == "G" or substr2 =='g':
             x = x + "C"
-    return x[::-1]
+    return x[::-1]  #returns the string of complements reversed
     
 def get_reverse_complement_unit_tests():
     """ Unit tests for the get_complement function """
@@ -85,10 +85,10 @@ def rest_of_ORF(dna):
     """
     
     i=0    
-    while i<(len(dna)-2):
+    while i<(len(dna)-2):     #cycles through codons
         substr = dna[i:i+3]
-        if substr == "TAG" or substr== "TAA" or substr == "TGA":
-            return dna[0:i]
+        if substr == "TAG" or substr== "TAA" or substr == "TGA":  #matches codons with end codons
+            return dna[0:i] #returns ORF
         else: i=i+3
     return dna
 
@@ -112,13 +112,13 @@ def find_all_ORFs_oneframe(dna):
     
     i=0 
     L=[]
-    while i<(len(dna)-2):
-        if dna[i:i+3] == "ATG":
-            subdna = rest_of_ORF(dna[i:])
-            L.append (subdna)
+    while i<(len(dna)-2):  #cycles through codons
+        if dna[i:i+3] == "ATG":  #matches codons to start codon
+            subdna = rest_of_ORF(dna[i:])   #runs rest_of_ORF on dna starting at i
+            L.append (subdna)   #adds ORF to list L
             i+=3
         else: i+=3
-    return L
+    return L   #returns list of ORFs
 
         
      
@@ -138,11 +138,11 @@ def find_all_ORFs(dna):
     """
     
     L=[]     
-    for i in range (0,3):
-        x= find_all_ORFs_oneframe (dna[i:])
+    for i in range (0,3):   #cycles through dna starting at positions 0,1 and 2
+        x= find_all_ORFs_oneframe (dna[i:])   #runs find_all_ORFs_oneframe on dna starting at i
         for item in x:
-            L.append(item)
-    return L
+            L.append(item)   #adds each ORF to list L
+    return L  #returns list of all ORFs
     
 
 def find_all_ORFs_unit_tests():
@@ -159,13 +159,13 @@ def find_all_ORFs_both_strands(dna):
     """
     
     L=[]
-    x=find_all_ORFs(dna)
-    y=find_all_ORFs(get_reverse_complement(dna))
+    x=find_all_ORFs(dna)   #sets variable x equal to all of the ORFs in dna
+    y=find_all_ORFs(get_reverse_complement(dna))    #sets variable y equal to all the ORFs in the reverse compliment of dna
     for item1 in x:
-        L.append (item1)
+        L.append (item1)   # adds each ORF from dna to list L
     for item2 in y:
-        L.append (item2)
-    return L
+        L.append (item2)   #adds each ORF from the reverse compliment of dna to list L
+    return L    #returns a list of all the ORFs in both strands. 
         
         
 
@@ -179,14 +179,14 @@ def longest_ORF(dna):
         as a string"""
         
     x=0  
-    y=find_all_ORFs_both_strands(dna)
+    y=find_all_ORFs_both_strands(dna)    #sets variable y equal to all the ORFs on both strands
     z=[]
 
-    for i in range (0,len(y)):
+    for i in range (0,len(y)):  #cycles through all the items in y
         if len(y[i]) >x:
-            x=len(y[i])
-            z.append (y[i])
-    return z[(len(z)-1)]
+            x=len(y[i])     #checks to see if the new ORF is longer than the previous longest ORF
+            z.append (y[i])   #adds the new longest ORF to list z
+    return z[(len(z)-1)]  #returns the longest ORF
             
 
 def longest_ORF_unit_tests():
@@ -211,15 +211,15 @@ def longest_ORF_noncoding(dna, num_trials):
         if j<num_trials:      
             shuffle (listDna)
             yy=collapse (listDna)
-            zz=longest_ORF (yy)
-            L.append (zz)
+            zz=longest_ORF (yy)   #runs longest_ORF on the new string 
+            L.append (zz)    #creates a new list with all the longest of the shuffled ORFs
             
-    for i in range (0,len(L)):
+    for i in range (0,len(L)):    #cycles through all the elements in list L
         if len(L[i]) >x:
-            x=len(L[i])
-            z.append (L[i])
+            x=len(L[i])    #checks to see if the new ORF is longer than the previous longest ORF
+            z.append (L[i])   #adds the new longest ORF to list z
             
-    return z[-1]
+    return z[-1]   #returns the longest ORF
         
 
 def gene_finder(dna, threshold):
@@ -239,9 +239,9 @@ def gene_finder(dna, threshold):
     L=[]
 
     for i in range (0,len(y)):
-        if len(y[i]) >threshold:
-            z.append (y[i])
+        if len(y[i]) >threshold:   #checks to see if the length of the ORF is longer than the threshold
+            z.append (y[i])   #adds the ORF to list z if it is long enough
     for j in range (0,len(z)):
-        L.append (coding_strand_to_AA (z[j]))
-    return L
+        L.append (coding_strand_to_AA (z[j]))    #runs coding_strand_to_AA on each element of list z to change it to amino acids
+    return L     #returns a list of amino acids
         

@@ -27,16 +27,19 @@ def coding_strand_to_AA(dna):
                  the input DNA fragment
     """             
         
-    i=0
-    j=0
+    i=0	
+    j=0	# You don't have to initilize variables before a for loop. They are automatically initilized.
     x= ''
     l=0
-    while i<(len(dna)-2):
+    while i<(len(dna)-2):	# Rather than initilizing i, setting up a while loop, and incrementing i by three,
+    						# you have the option of using a for loop such as "for i in range(0, len(dna), 3)"
+    						# which will increment by three each time through the loop because of the third
+    						# argument to the range() function
         substr = dna[i:i+3]    #searches for codons
         for j in range(0,len(codons)):
             for l in range(0, len(codons[j])):
                 if codons [j][l] == substr:    #matches codon with item in codons
-                    x = x+ aa[j]  
+                    x = x+ aa[j]  # += would be a bit more succinct, but this is fine.
         i = i +3
     return x   #returns string with Amino Acids
 
@@ -58,6 +61,9 @@ def get_reverse_complement(dna):
     i=0
     x = ''
     for i in range(0,len(dna)):   #cycles through every element of dna
+
+    								# for future reference, for i in range(len(dna)) will go from 0
+    								# without needing to explicitly put the 0 into the function
         substr2 = dna[i:i+1]
         if substr2 == 'A' or substr2 == 'a':   #changes each element to its complement
             x=x+"T"
@@ -68,6 +74,7 @@ def get_reverse_complement(dna):
         elif substr2 == "G" or substr2 =='g':
             x = x + "C"
     return x[::-1]  #returns the string of complements reversed
+    				# Yep, good. 
     
 def get_reverse_complement_unit_tests():
     """ Unit tests for the get_complement function """
@@ -88,6 +95,10 @@ def rest_of_ORF(dna):
     while i<(len(dna)-2):     #cycles through codons
         substr = dna[i:i+3]
         if substr == "TAG" or substr== "TAA" or substr == "TGA":  #matches codons with end codons
+        														# Once again for future reference (by no means is
+        														# there an expectation of you being required to use this)
+																# you can simplify this statement with the following:
+																# "if substr in ['TAG','TAA','TGA']:"
             return dna[0:i] #returns ORF
         else: i=i+3
     return dna
@@ -110,9 +121,17 @@ def find_all_ORFs_oneframe(dna):
         returns: a list of non-nested ORFs
     """
     
+    # This function is bugged!
+    # My unit test is showing me that you're returning a nested ORF (which the docstring says you shouldn't!)
+    # input: ATGCATGAATGTAGATAGATGTGCCC, expected output: ['ATGCATGAATGTAGA', 'ATGTGCCC'] , actual output: ['ATGCATGAATGTAGA', 'ATGTGCCC']
+	# input: ATGTGCATGAGATAGGATGGGATGCTTG, expected output: ['ATGTGCATGAGA', 'ATGCTTG'], actual output: ['ATGTGCATGAGA', 'ATGAGA', 'ATGCTTG']
+	# This causes your next two functions to fail the unit tests as well in a similar manner (but don't worry, it only counts against you once)
+
     i=0 
     L=[]
     while i<(len(dna)-2):  #cycles through codons
+    							# The simplest way to avoid your bug with the code you have here
+    							# is to skip ahead by the number of codons that rest_of_ORF returns
         if dna[i:i+3] == "ATG":  #matches codons to start codon
             subdna = rest_of_ORF(dna[i:])   #runs rest_of_ORF on dna starting at i
             L.append (subdna)   #adds ORF to list L
@@ -140,7 +159,10 @@ def find_all_ORFs(dna):
     L=[]     
     for i in range (0,3):   #cycles through dna starting at positions 0,1 and 2
         x= find_all_ORFs_oneframe (dna[i:])   #runs find_all_ORFs_oneframe on dna starting at i
-        for item in x:
+        										# Another good use of substringing
+        for item in x:	#Great! I'm glad you are familiar with this syntax.
+        				# for future reference, you can concatinate two lists more
+        				# simply though simply by saying that list1 = list1+list2 (or list1 += list2)
             L.append(item)   #adds each ORF to list L
     return L  #returns list of all ORFs
     
@@ -166,6 +188,9 @@ def find_all_ORFs_both_strands(dna):
     for item2 in y:
         L.append (item2)   #adds each ORF from the reverse compliment of dna to list L
     return L    #returns a list of all the ORFs in both strands. 
+
+    # Yep, this works. You can also just say "return find_all_ORFs(dna) + find_all_ORFs(get_reverse_complement(dna))"
+    # which quite elegantly makes this function a one-liner
         
         
 
@@ -186,7 +211,11 @@ def longest_ORF(dna):
         if len(y[i]) >x:
             x=len(y[i])     #checks to see if the new ORF is longer than the previous longest ORF
             z.append (y[i])   #adds the new longest ORF to list z
+            				# This is fine, but in future, it would be more compact to make use of the max() function
+            				# which will find the maximum of a list for you
     return z[(len(z)-1)]  #returns the longest ORF
+    						# Python supports a nice indexing syntax in which you can increment from the end
+    						# of a list with negative numbers, so z[len(z)-1] is the same thing as z[-1]
             
 
 def longest_ORF_unit_tests():
@@ -220,6 +249,7 @@ def longest_ORF_noncoding(dna, num_trials):
             z.append (L[i])   #adds the new longest ORF to list z
             
     return z[-1]   #returns the longest ORF
+    				#Oh, very nice! There you go. Well, neglect my comment above about z[-1] then.
         
 
 def gene_finder(dna, threshold):
